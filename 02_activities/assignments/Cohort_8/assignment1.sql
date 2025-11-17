@@ -4,16 +4,25 @@
 
 --SELECT
 /* 1. Write a query that returns everything in the customer table. */
-
+SELECT* 
+FROM customer;
 
 
 /* 2. Write a query that displays all of the columns and 10 rows from the cus- tomer table, 
 sorted by customer_last_name, then customer_first_ name. */
 
-
+SELECT* 
+FROM customer
+ORDER BY customer_last_name ASC,
+customer_first_name ASC
+LIMIT 10;
 
 --WHERE
 /* 1. Write a query that returns all customer purchases of product IDs 4 and 9. */
+
+SELECT*
+FROM customer_purchases 
+WHERE product_id IN (4,9);
 
 
 
@@ -24,8 +33,25 @@ filtered by customer IDs between 8 and 10 (inclusive) using either:
 */
 -- option 1
 
+SELECT
+customer_id,
+quantity,
+cost_to_customer_per_qty,
+quantity * cost_to_customer_per_qty as price
+
+FROM customer_purchases
+WHERE customer_id IN (8,10);
+
 
 -- option 2
+SELECT
+customer_id,
+quantity,
+cost_to_customer_per_qty,
+quantity * cost_to_customer_per_qty as price
+
+FROM customer_purchases
+WHERE customer_id BETWEEN 8 AND 10;
 
 
 
@@ -35,11 +61,39 @@ Using the product table, write a query that outputs the product_id and product_n
 columns and add a column called prod_qty_type_condensed that displays the word “unit” 
 if the product_qty_type is “unit,” and otherwise displays the word “bulk.” */
 
+SELECT
+product_id,
+product_name,
+product_qty_type,
+
+CASE
+	WHEN product_qty_type = 'unit' THEN 'unit' 
+	ELSE 'bulk'
+	END as product_qty_type_condensed
+	
+FROM product;
+
 
 
 /* 2. We want to flag all of the different types of pepper products that are sold at the market. 
 add a column to the previous query called pepper_flag that outputs a 1 if the product_name 
 contains the word “pepper” (regardless of capitalization), and otherwise outputs 0. */
+
+SELECT
+product_id,
+product_name,
+product_qty_type,
+
+CASE
+	WHEN product_qty_type = 'unit' THEN 'unit' 
+	ELSE 'bulk'
+	END as product_qty_type_condensed,
+CASE
+	WHEN product_name LIKE '%pepper%' THEN 1 
+	ELSE 0
+	END as pepper_flag
+FROM product;
+
 
 
 
@@ -47,8 +101,20 @@ contains the word “pepper” (regardless of capitalization), and otherwise out
 /* 1. Write a query that INNER JOINs the vendor table to the vendor_booth_assignments table on the 
 vendor_id field they both have in common, and sorts the result by vendor_name, then market_date. */
 
-
-
+SELECT
+    v.vendor_name,
+    vba.market_date,
+    v.vendor_id,
+    vba.booth_number
+FROM
+    vendor AS v
+INNER JOIN
+    vendor_booth_assignments AS vba ON v.vendor_id = vba.vendor_id
+ORDER BY
+    v.vendor_name,
+    vba.market_date;
+	
+	
 
 /* SECTION 3 */
 
@@ -57,6 +123,13 @@ vendor_id field they both have in common, and sorts the result by vendor_name, t
 at the farmer’s market by counting the vendor booth assignments per vendor_id. */
 
 
+SELECT 
+vendor_id, 
+COUNT(*) AS booth_number
+
+FROM vendor_booth_assignments
+GROUP BY vendor_id;
+
 
 /* 2. The Farmer’s Market Customer Appreciation Committee wants to give a bumper 
 sticker to everyone who has ever spent more than $2000 at the market. Write a query that generates a list 
@@ -64,6 +137,63 @@ of customers for them to give stickers to, sorted by last name, then first name.
 
 HINT: This query requires you to join two tables, use an aggregate function, and use the HAVING keyword. */
 
+SELECT
+customer_id,
+quantity,
+cost_to_customer_per_qty,
+quantity * cost_to_customer_per_qty as price
+
+FROM customer_purchases
+WHERE customer_id IN (8,10);
+
+
+-- option 2
+SELECT
+customer_id,
+quantity,
+cost_to_customer_per_qty,
+quantity * cost_to_customer_per_qty as price
+
+FROM customer_purchases
+
+GROUP BY customer_id;
+
+
+SELECT
+    v.vendor_name,
+	v.vendor_id,
+    vba.quantity,
+	vba.cost_to_customer_per_qty,
+    vba.booth_number,
+	vba.quantity * vba.cost_to_customer_per_qty as price
+	sum(*) as price
+FROM
+    vendor AS v
+	
+GROUP BY vendor_id; --
+
+INNER JOIN
+    customer_purchases AS vba ON v.vendor_id = vba.vendor_id
+
+
+	
+SELECT
+    v.customer_first_name,
+    v.customer_last_name,
+	v.customer_id
+    SUM(O.TotalAmount) AS TotalSpent
+FROM
+    Customers C
+JOIN
+    Orders O ON C.CustomerID = O.CustomerID
+GROUP BY
+    C.CustomerID, C.FirstName, C.LastName
+HAVING
+    SUM(O.TotalAmount) > 2000
+ORDER BY
+    C.LastName ASC,
+    C.FirstName ASC;
+	
 
 
 --Temp Table
