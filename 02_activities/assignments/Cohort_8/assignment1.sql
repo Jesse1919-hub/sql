@@ -144,7 +144,7 @@ c.customer_first_name,
 c.customer_last_name,
 v.quantity,
 v.cost_to_customer_per_qty,
-SUM(v.quantity * v.cost_to_customer_per_qty) as price 
+SUM(v.quantity * v.cost_to_customer_per_qty) as total_spent 
 
 FROM customer_purchases as v
 
@@ -153,7 +153,12 @@ JOIN customer as c
 ON v.customer_id = c.customer_id
 
 GROUP BY 
-c.customer_id, c.customer_first_name, c.customer_last_name;
+c.customer_id, c.customer_first_name, c.customer_last_name
+
+HAVING Total_spent >2000
+
+ORDER BY c.customer_last_name ASC, c.customer_first_name ASC;
+
 
 
 
@@ -169,7 +174,10 @@ When inserting the new vendor, you need to appropriately align the columns to be
 VALUES(col1,col2,col3,col4,col5) 
 */
 
+CREATE TABLE temp.new_vendor AS SELECT * FROM vendor;
 
+INSERT INTO temp.new_vendor (vendor_id, vendor_name, vendor_type, vendor_owner_first_name, vendor_owner_last_name)
+VALUES (10, 'Thomass Superfood Store','Fresh Focused store', 'Thomas', 'Rosenthal');
 
 -- Date
 /*1. Get the customer_id, month, and year (in separate columns) of every purchase in the customer_purchases table.
