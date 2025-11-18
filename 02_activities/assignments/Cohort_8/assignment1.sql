@@ -137,63 +137,24 @@ of customers for them to give stickers to, sorted by last name, then first name.
 
 HINT: This query requires you to join two tables, use an aggregate function, and use the HAVING keyword. */
 
-SELECT
-customer_id,
-quantity,
-cost_to_customer_per_qty,
-quantity * cost_to_customer_per_qty as price
-
-FROM customer_purchases
-WHERE customer_id IN (8,10);
-
-
--- option 2
-SELECT
-customer_id,
-quantity,
-cost_to_customer_per_qty,
-quantity * cost_to_customer_per_qty as price
-
-FROM customer_purchases
-
-GROUP BY customer_id;
-
 
 SELECT
-    v.vendor_name,
-	v.vendor_id,
-    vba.quantity,
-	vba.cost_to_customer_per_qty,
-    vba.booth_number,
-	vba.quantity * vba.cost_to_customer_per_qty as price
-	sum(*) as price
-FROM
-    vendor AS v
-	
-GROUP BY vendor_id; --
+c.customer_id,
+c.customer_first_name,
+c.customer_last_name,
+v.quantity,
+v.cost_to_customer_per_qty,
+SUM(v.quantity * v.cost_to_customer_per_qty) as price 
 
-INNER JOIN
-    customer_purchases AS vba ON v.vendor_id = vba.vendor_id
+FROM customer_purchases as v
 
+JOIN customer as c
 
-	
-SELECT
-    v.customer_first_name,
-    v.customer_last_name,
-	v.customer_id
-    SUM(O.TotalAmount) AS TotalSpent
-FROM
-    Customers C
-JOIN
-    Orders O ON C.CustomerID = O.CustomerID
-GROUP BY
-    C.CustomerID, C.FirstName, C.LastName
-HAVING
-    SUM(O.TotalAmount) > 2000
-ORDER BY
-    C.LastName ASC,
-    C.FirstName ASC;
-	
+ON v.customer_id = c.customer_id
+
+GROUP BY 
+c.customer_id, c.customer_first_name, c.customer_last_name;
+
 
 
 --Temp Table
