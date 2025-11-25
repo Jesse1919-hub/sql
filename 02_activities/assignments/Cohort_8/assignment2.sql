@@ -20,7 +20,7 @@ The `||` values concatenate the columns into strings.
 Edit the appropriate columns -- you're making two edits -- and the NULL rows will be fixed. 
 All the other rows will remain the same.) */
 SELECT
-    product_name || ', ' || COALESCE(product_size, '') || ' (' || COALESCE(product_qty_type, 'unit') || ')' --coalesce will return blank for prod size, and unit if null in qty type
+    product_name || ', ' || COALESCE(product_size, '') || ' (' || COALESCE(product_qty_type, 'unit') || ')' -- coalesce will return blank for prod size and unit if null in qty type
 FROM product;
 
 
@@ -35,7 +35,7 @@ each new market date for each customer, or select only the unique market dates p
 HINT: One of these approaches uses ROW_NUMBER() and one uses DENSE_RANK(). */
 
 SELECT customer_id,market_date,
-ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY market_date) AS number_of_visit -- I use ROW_NUMBER to show visits
+ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY market_date) AS number_of_visit -- used ROW_NUMBER to show visits
 FROM (SELECT DISTINCT customer_id, market_date  -- select only in a subset when a customer and date combinations are present
 FROM customer_purchases) AS distinct_visits
 ORDER BY customer_id, market_date;
@@ -74,11 +74,11 @@ Remove any trailing or leading whitespaces. Don't just use a case statement for 
 Hint: you might need to use INSTR(product_name,'-') to find the hyphens. INSTR will help split the column. */
 
 SELECT product_name,
-    CASE -- is there "-" ?
+    CASE -- is there "-" entry?
         WHEN INSTR(product_name, '-') > 0 THEN
             TRIM(
                 SUBSTR(
-                    product_name, --if there is find the description
+                    product_name, -- if there is find the description
                     INSTR(product_name, '-') + 1 -- make sure "-" is not included
                 )
             )
@@ -89,7 +89,7 @@ FROM product
 
 /* 2. Filter the query to show any product_size value that contain a number with REGEXP. */
 
-SELECT product_name, product_size -- the numbers are found in product_name
+SELECT product_name, product_size -- the numbers are found in the product_name
 FROM
     product
 WHERE
