@@ -54,7 +54,9 @@ The store wants to keep customer addresses. Propose two architectures for the CU
 **HINT:** search type 1 vs type 2 slowly changing dimensions. 
 
 ```
-Your answer...
+SCD Type 1: This approach simply overwrites the existing address with the new one. Only the most current address is stored, and once updated, the previous value is lost. In this design, the Customer_ID serves as the primary key 
+
+SCD Type 2: This method preserves historical data by retaining old addresses. When an address changes, a new record is inserted, while the previous record is marked as inactive using Start_Date, End_Date, and an Is_Current flag. This ensures that past addresses remain linked to transactions or purchases valid during their timeframe - web reference
 ```
 
 ***
